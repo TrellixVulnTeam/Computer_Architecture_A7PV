@@ -8,40 +8,49 @@ int main(int argc, char* argv[]) {
     perror("fopen failed");
     return EXIT_FAILURE;
   }
+  //size: the size of the list
+  //num_of_elements: The number of elements to be returned
+  //temp: store the current largest number
   int size = 0, num_of_elements = 0, temp;
-  //fscanf(fp, "%d", &size);
   fscanf(fp, "%d", &size);
-  printf("the size of the list is %d\n", size);
   fscanf(fp, "%d", &num_of_elements);
-  printf("you need output %d number\n", num_of_elements);
-  int num [num_of_elements];
-  int list [size];
+
+  // num[ ]: The array that holds the numbers to be returned
+  // Initialize all its elements to INT_MIN
+  int num [num_of_elements]; 
   for(int i=0; i<num_of_elements; i++)
   {
-    fscanf(fp, "%d", &num[i]);;
-    //printf("%d ", num[i]);
+    num[i] = INT32_MIN;
   }
-  //printf("\n");
-  for(int i=0; i<size-num_of_elements; i++)
+
+
+  //The algorithm: whenever a number larger than the elements in the return array is found, insert that number into the array and push back all the elements of larger index one index.
+  //To form a sorted descending array.
+  for(int i=0; i<size; i++)
   {
     fscanf(fp, "%d", &temp);
-    printf("temp is %d\n", temp);
-    //int subtract = 0;
     for(int j=0; j<num_of_elements; j++)
     {
-      //subtract = num[j]
       if(temp > num[j])
       {
-        num[j]=temp;
-        
+        for(int k=num_of_elements-1; k>j; k--)
+        {
+          num[k] = num[k-1];
+        }
+        num[j] = temp;
+        break;
       }
     }
   }
+
+
+
+  //Print the array to the command line
   for(int i=0; i<num_of_elements; i++)
   {
-    //printf("%d", num[i]);
+    printf("%d ", num[i]);
   }
-
+  printf("\n");
 
   fclose(fp);
   return 0;
