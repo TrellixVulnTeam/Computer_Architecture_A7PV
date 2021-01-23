@@ -1,0 +1,22 @@
+maximum complete
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch test
+# Your branch is up to date with 'origin/test'.
+#
+# Changes to be committed:
+#	modified:   pa1/maximum/maximum.c
+#
+# Changes not staged for commit:
+#	deleted:    pa1/maximum/maximum_provided.c
+#
+# Untracked files:
+#	.DS_Store
+#	pa1/.DS_Store
+#	pa1/maximum/answers/answer4.txt
+#	pa1/maximum/answers/answer5.txt
+#	pa1/maximum/maximum
+#	pa1/maximum/tests/test4.txt
+#	pa1/maximum/tests/test5.txt
+#
