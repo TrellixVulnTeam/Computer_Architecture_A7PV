@@ -14,7 +14,8 @@ void insert (node* , int new_val);
 int main(int argc, char* argv[])
 {
     FILE* fp = fopen(argv[1], "r");
-    if (!fp) {
+    if (!fp) 
+    {
         perror("fopen failed");
         return EXIT_FAILURE;
     }
@@ -27,7 +28,8 @@ int main(int argc, char* argv[])
         root->val = atoi(buff);
     }
 
-    while ( fscanf(fp, "%s", buff)!=EOF ) {
+    while ( fscanf(fp, "%s", buff)!=EOF ) 
+    {
         insert(root, atoi(buff));
     }
     inorder(root);
