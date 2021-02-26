@@ -5,13 +5,13 @@
 int main ( int argc, char* argv[] ) {
 
     // FIRST, READ THE ADJACENCY MATRIX FILE
-    AdjacencyListNode** adjacencyList = malloc(sizeof(AdjacencyListNode**));
-    int num_nodes = adjMatrixToList(argv[1], adjacencyList);
+    AdjacencyListNode* adjacencyList = NULL;
+    int num_nodes = adjMatrixToList(argv[1], &adjacencyList);
     // NEXT, TRAVERSE THE ADJACENCY LIST AND PRINT EACH EDGE, REPRESENTED AS A PAIR OF NODES
     // Example of traversing the adjacency list is in the freeAdjList() function in graphutils.h
     for(int i=0; i<num_nodes; i++)
     {
-        AdjacencyListNode* temp = &((*adjacencyList)[i]);
+        AdjacencyListNode* temp = &(adjacencyList[i]);
         graphNode_t source = temp->graphNode;
         while(temp->next)
         {
@@ -23,7 +23,6 @@ int main ( int argc, char* argv[] ) {
         }
     }
     // NOW, BE SURE TO FREE THE ADJACENCY LIST
-    freeAdjList(num_nodes, *adjacencyList);
-    free(adjacencyList);
+    freeAdjList(num_nodes, adjacencyList);
     return EXIT_SUCCESS;
 }
