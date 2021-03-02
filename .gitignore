@@ -71,4 +71,4 @@ answer_key
 *.xlsx
 
 #vscode
-.vscode/*
+.vscode/
