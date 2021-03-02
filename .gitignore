@@ -69,3 +69,6 @@ answer_key
 *.csv
 *.xls
 *.xlsx
+
+#vscode
+.vscode/*
