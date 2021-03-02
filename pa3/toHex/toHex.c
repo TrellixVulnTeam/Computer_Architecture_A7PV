@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     fscanf(fp, "%hd", &input); // note how the 'h' modifier shortens the %d to half size
 
     // print bits; you will see this kind of for loop often in this assignment
-    for ( int digit=16; 0<=digit; digit-- ) {
+    for ( int digit=15; 0<=digit; digit-- ) {
         bool char_val = 0b1 & input>>digit; // shift and mask
         printf("%d",char_val);
     }
