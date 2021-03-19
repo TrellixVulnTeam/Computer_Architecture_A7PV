@@ -37,7 +37,8 @@ int main(int argc, char *argv[]) {
     if(exp == 0)
     {
         e = 1-127;
-        m = ((binary - (sign<<(EXP_SZ+FRAC_SZ)) - (exp<<(FRAC_SZ)))>>(FRAC_SZ-1)) / pow(2, FRAC_SZ);
+        m = (binary - (sign<<(EXP_SZ+FRAC_SZ)) - (exp<<(FRAC_SZ)))/ pow(2, FRAC_SZ);
+        //m = (binary<<9)/pow(2, FRAC_SZ);
     }
     else
     {
