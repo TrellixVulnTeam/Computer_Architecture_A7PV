@@ -70,5 +70,16 @@ answer_key
 *.xls
 *.xlsx
 
+<<<<<<< HEAD
 #vscode
 .vscode/
+=======
+# Bomb Lab
+bomb*
+
+# Cache Lab
+cachelab.tar
+cachelab/
+.csim_results
+.marker
+>>>>>>> 8005cde9f5d50201524a7c6a44f49b7e5e892545
