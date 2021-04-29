@@ -41,7 +41,7 @@ void accessData (
 
     // Cache indices for this address
     mem_addr_t tag = addr >> (s+b);
-
+    //printf("tag:%llu\n", tag);  
     // Cache hit
     cache_line_t* curr_line = cache->front;
     while ( curr_line != NULL ) {

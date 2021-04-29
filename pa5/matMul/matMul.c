@@ -4,7 +4,7 @@
 #include <assert.h>
 
 /* Markers used to bound trace regions of interest */
-volatile char MARKER_START, MARKER_END;
+volatile int MARKER_START, MARKER_END;
 
 int main(int argc, char* argv[])
 {
@@ -56,14 +56,14 @@ int main(int argc, char* argv[])
     int* c = calloc( n*n, sizeof(int) );
     MARKER_START = 211;
     // ikj
-    for ( size_t i=0; i<n; i++ ) {
-        for ( size_t k=0; k<n; k++ ) {
-            int r = a[i*n+k];
-            for ( size_t j=0; j<n; j++ ) {
-                c[i*n+j] += r * b[k*n+j];
-            }
-        }
-    }
+    // for ( size_t i=0; i<n; i++ ) {
+    //     for ( size_t k=0; k<n; k++ ) {
+    //         int r = a[i*n+k];
+    //         for ( size_t j=0; j<n; j++ ) {
+    //             c[i*n+j] += r * b[k*n+j];
+    //         }
+    //     }
+    // }
 
     // kij
     // for ( size_t k=0; k<n; k++ ) {
@@ -84,6 +84,29 @@ int main(int argc, char* argv[])
     //         }
     //     }
     // }
+    int bsize = 1;
+    int blockNum = bsize * (n/bsize);
+    int sum = 0;
+    int kk, jj, i, j, k;
+
+    for(kk=0; kk<blockNum; kk+=bsize)
+    {
+        for(jj=0; jj<blockNum; jj+=bsize)
+        {
+            for(i=0; i<n; i++)
+            {
+                for(j=jj; j<jj+bsize; j++)
+                {
+                    sum = c[i*n+j];
+                    for(k=kk; k<kk+bsize; k++)
+                    {
+                        sum+=a[i*n+k]*b[k*n+j];
+                    }
+                    c[i*n+j] = sum;    
+                }
+            }
+        }
+    }
     MARKER_END = 211;
 
     for ( size_t i=0; i<n; i++ ) {

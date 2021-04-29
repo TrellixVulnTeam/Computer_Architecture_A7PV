@@ -35,6 +35,7 @@ void accessData (
     // Cache indices for this address
     unsigned int SetIndex = (addr>>b)-((addr>>(s+b))<<s);
     mem_addr_t tag = addr>>(b+s);
+    //printf("tag:%llu\n", tag);
     // Cache hit
     if(tag == cache[SetIndex].tag && cache[SetIndex].valid)
     {

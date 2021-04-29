@@ -41,24 +41,51 @@ void accessData (
 ) {
 
     // Cache indices for this address
-    /* ... */
+    mem_addr_t tag = addr>>(b+s);
+
 
     // Find the correct cache set
-    /* ... */
+    unsigned int setIndex = (addr>>b)-((addr>>(s+b))<<s);
 
     // Cache hit
-    /* ... */
+    for(int i=0; i<4; i++)
+    {
+        if(cache[setIndex][i].tag == tag && cache[setIndex][i].valid)
+        {
+            (*hit_count)++;
+            cache[setIndex][i].recent_use = program_counter;
+            return;
+        }
+    }
 
     // Otherwise, record a cache miss
-    /* ... */
+    (*miss_count)++;
 
     // Within the correct cache set, find the least recently used line; that is where missed cache block will be placed
-    /* ... */
+    size_t recent = cache[setIndex][0].recent_use;
+    cache_line_t* toBeEvicted = &cache[setIndex][0];
+    for(int i=0; i<4; i++)
+    {
+        if(!cache[setIndex][0].valid)
+        {
+            toBeEvicted = &(cache[setIndex][i]);
+            break;
+        }
+        else if(cache[setIndex][i].recent_use <= recent)
+        {
+            recent = cache[setIndex][i].recent_use;
+            toBeEvicted = &(cache[setIndex][i]);
+        }
+    }
 
     // If cache set line already in use, then record an eviction
-    /* ... */
-
-    /* ... */
+    if(toBeEvicted->valid)
+    {
+        (*eviction_count)++;
+    }
+    toBeEvicted->tag = tag;
+    toBeEvicted->valid = true;   
+    toBeEvicted->recent_use = program_counter;
 }
 
 int main(int argc, char* argv[]) {
@@ -79,6 +106,12 @@ int main(int argc, char* argv[]) {
     cache_t cache = calloc( S, sizeof(cache_set_t) );
     for (size_t set_index=0; set_index<S; set_index++) {
         cache[set_index] = calloc( E, sizeof(cache_line_t) );
+        for(int i=0; i<4; i++)
+        {
+            cache[set_index][i].recent_use = 0;
+            cache[set_index][i].valid = false;
+            cache[set_index][i].tag = 0;
+        }
     }
 
     // cache simulation statistics
@@ -91,9 +124,21 @@ int main(int argc, char* argv[]) {
     char line_buf[line_buf_size];
     while ( fgets(line_buf, line_buf_size, fp) != NULL ) {
 
-        program_counter++;
+            if ( line_buf[1]=='L' || line_buf[1]=='S' || line_buf[1]=='M' ) {
+            char access_type = '\0';
+            mem_addr_t addr = 0;
+            unsigned int len = 0;
+            sscanf ( line_buf, " %c %llx,%u", &access_type, &addr, &len );
 
-        /* ... */
+            if ( access_type=='L' || access_type=='S' || access_type=='M') {
+                program_counter++;
+                accessData(addr, cache, &hit_count, &miss_count, &eviction_count);
+            }
+
+            // If the instruction is M indicating L followed by S then access again
+            if(access_type=='M')
+                accessData(addr, cache, &hit_count, &miss_count, &eviction_count);
+        }
     }
 
     for (size_t set_index=0; set_index<S; set_index++) {

@@ -4,7 +4,7 @@
 #include <assert.h>
 
 /* Markers used to bound trace regions of interest */
-volatile char MARKER_START, MARKER_END;
+volatile int MARKER_START, MARKER_END;
 
 // Cache oblivious matrix transpose
 // https://en.wikipedia.org/wiki/Cache-oblivious_algorithm
@@ -15,7 +15,7 @@ void recursiveMatTrans (
     int* B, size_t offset_row_B, size_t offset_col_B
 ) {
 
-    if (n<=32) { // base case
+    if (n<=1) { // base case
         for ( size_t i=0; i<n; i++ ) {
             for ( size_t j=0; j<n; j++ ) {
                 B[ (offset_row_B+j)*global_n + offset_col_B+i ] = A[ (offset_row_A+i)*global_n + offset_col_A+j ];
@@ -23,9 +23,9 @@ void recursiveMatTrans (
         }
     } else { // recursive case
         recursiveMatTrans ( global_n, n>>1, A, offset_row_A,        offset_col_A,        B, offset_row_B,        offset_col_B        );
-        /* ... */
-        /* ... */
-        /* ... */
+        recursiveMatTrans ( global_n, n>>1, A, offset_row_A, offset_col_A+(n>>1), B, offset_row_B+(n>>1), offset_col_B);
+        recursiveMatTrans ( global_n, n>>1, A, offset_row_A+(n>>1), offset_col_A, B, offset_row_B, offset_col_B+(n>>1));
+        recursiveMatTrans ( global_n, n>>1, A, offset_row_A+(n>>1), offset_col_A+(n>>1), B, offset_row_B+(n>>1), offset_col_B+(n>>1));
     }
 }
 

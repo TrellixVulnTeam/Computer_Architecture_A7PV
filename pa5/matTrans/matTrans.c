@@ -4,7 +4,7 @@
 #include <assert.h>
 
 /* Markers used to bound trace regions of interest */
-volatile char MARKER_START, MARKER_END;
+volatile int MARKER_START, MARKER_END;
 
 int main(int argc, char* argv[])
 {
