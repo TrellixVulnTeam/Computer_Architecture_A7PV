@@ -162,11 +162,12 @@ void printTruthTableRow (
     temp->val = outVal;
     temp->prev = varList;
     varList = temp;
+    free(line);
     line = NULL;
     len = 0;
     }
     /* ... */
-
+    //free(&len);
     // Print the truth table
     for ( size_t i=0; i<circuitInputCount; i++ ) {
         var_t* curr = varList;

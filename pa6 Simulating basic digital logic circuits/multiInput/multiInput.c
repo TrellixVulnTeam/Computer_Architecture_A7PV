@@ -27,11 +27,11 @@ void findOutVarNameVal (
     char gate[5];
     int inputs = -1;
     //printf("%s\n\n",gateLine);
-
-    if ( sscanf(gateLine, "NOT %s %s\n", inName0, *outName)==2 ) {
+    char tempName[NAME_SIZE];
+    if ( sscanf(gateLine, "NOT %s %s\n", inName0, tempName)==2 ) {
         // It is a NOT gate
         // printf("NOT %s %s\n", inName0, outName);
-
+        *outName = tempName;
         bool inVal=false;
 
         // Traverse varList to look for existing value
@@ -126,6 +126,7 @@ void findOutVarNameVal (
                 perror("invalid line describing gate in circuit file\n");
                 exit(EXIT_FAILURE);                
             }
+            free(inName);
             //printf("outName is %s, outVal is %d\n", *outName, *outVal);
 
     }
@@ -169,8 +170,8 @@ void printTruthTableRow (
     // Read the rest of the circuit file consisting of gates line by line
     char* line = NULL;
     size_t len = 0;
-    char* outName = malloc(NAME_SIZE);
-    //free(outName);
+    char* outName;
+    // free(outName);
     while(getline(&line, &len, circuit_fp)!=-1)
     {
     // https://riptutorial.com/c/example/8274/get-lines-from-a-file-using-getline--
@@ -192,6 +193,7 @@ void printTruthTableRow (
     temp->val = outVal;
     temp->prev = varList;
     varList = temp;
+    free(line);
     line = NULL;
     len = 0;
     }
