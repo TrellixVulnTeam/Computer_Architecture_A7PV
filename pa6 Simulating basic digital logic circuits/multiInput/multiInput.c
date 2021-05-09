@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-
+#include <math.h>
 #define NAME_SIZE 16
 
 // Reverse linked list node of Boolean variable and Boolean value pairs
@@ -19,15 +19,16 @@ typedef struct var {
 void findOutVarNameVal (
     var_t* varList,
     char* gateLine,
-    char* outName,
+    char** outName,
     bool* outVal
 ) {
 
     char inName0[NAME_SIZE];
+    char gate[5];
+    int inputs = -1;
+    //printf("%s\n\n",gateLine);
 
-    // printf("%s\n",gateLine);
-
-    if ( sscanf(gateLine, "NOT %s %s\n", inName0, outName)==2 ) {
+    if ( sscanf(gateLine, "NOT %s %s\n", inName0, *outName)==2 ) {
         // It is a NOT gate
         // printf("NOT %s %s\n", inName0, outName);
 
@@ -46,10 +47,86 @@ void findOutVarNameVal (
 
         *outVal = !inVal;
 
-    } else {
+    } else{
         // It is not a NOT gate
+        sscanf(gateLine, "%s %d ", gate, &inputs);
+        char delim[] = " ";
+        //printf("number of inputs is %d\n", inputs);
+        // strtok(gateLine, delim);
+        char* temp = gateLine;
+        strtok_r(temp, delim, &temp);
+        strtok_r(temp, delim, &temp);
+        char** inName = malloc(sizeof(char*)*inputs);
+        for(int i=0; i<inputs; i++)
+        {
 
-        /* ... */
+            inName[i] = strtok_r(temp, delim, &temp);
+            //printf("inName %d is %s\n", i, inName[i]);
+            // //sscanf(gateLine, "%s %d %s", inName[i]);
+            // //printf("inName %d is %s\n", i, inName[i]);
+
+        }
+        // sscanf(gateLine, "%s\n", outName);
+        *outName = strtok_r(temp, "\n", &temp);
+        
+        //printf("outname is %s\n", outName);
+
+
+        bool inVal[inputs];
+        var_t* curr = varList;
+        while(curr)
+        {
+            for(int i=0; i<inputs; i++)
+            {
+                if(strcmp(curr->name, inName[i])==0)
+                {
+                    inVal[i] = curr->val;
+                    //printf("inName %s is matched, inVal is %d\n", inName[i], inVal[i]);
+                }
+            }
+            curr = curr->prev;
+        }
+
+            if(strcmp(gate, "AND")==0)
+            {
+                *outVal = inVal[0];
+                for(int i=1; i<inputs; i++)
+                {
+                    *outVal = *outVal && inVal[i];
+                }
+            }
+            else if(strcmp(gate, "NAND")==0)
+            {
+                *outVal = inVal[0];
+                for(int i=1; i<inputs; i++)
+                {
+                    *outVal = *outVal && inVal[i];
+                }
+                *outVal = !(*outVal);
+            }
+            else if(strcmp(gate, "OR")==0)
+            {
+                *outVal = inVal[0];
+                for(int i=1; i<inputs; i++)
+                {
+                    *outVal = *outVal || inVal[i];
+                }
+            }
+            else if(strcmp(gate, "NOR")==0)
+            {
+                *outVal = inVal[0];
+                for(int i=1; i<inputs; i++)
+                {
+                    *outVal = *outVal || inVal[i];
+                }
+                *outVal = !(*outVal);
+            }     
+            else
+            {
+                perror("invalid line describing gate in circuit file\n");
+                exit(EXIT_FAILURE);                
+            }
+            //printf("outName is %s, outVal is %d\n", *outName, *outVal);
 
     }
 }
@@ -92,23 +169,32 @@ void printTruthTableRow (
     // Read the rest of the circuit file consisting of gates line by line
     char* line = NULL;
     size_t len = 0;
+    char* outName = malloc(NAME_SIZE);
+    //free(outName);
+    while(getline(&line, &len, circuit_fp)!=-1)
+    {
+    // https://riptutorial.com/c/example/8274/get-lines-from-a-file-using-getline--
 
-    // CURRENTLY SET UP TO READ AND PROCESS A SINGLE CIRCUIT FILE LINE FOR A SINGLE GATE
+    // THIS IS CURRENTLY SET UP TO READ A CIRCUIT FILE LINE FOR A SINGLE GATE
     /* ... */
-    assert ( getline(&line, &len, circuit_fp)!=-1 );
+    //assert ( getline(&line, &len, circuit_fp)!=-1 );
 
-    char outName[NAME_SIZE];
-    bool outVal;
-    findOutVarNameVal( varList, line, outName, &outVal );
-
+    //char* outName = malloc(NAME_SIZE*sizeof(char));
+    bool outVal=false;
+    findOutVarNameVal( varList, line, &outName, &outVal );
+    //printf("outName is %s, outval is \n", *outName);
     // Record this gate's outputs
     var_t* temp = calloc( 1, sizeof(var_t) );
     // https://www.tutorialspoint.com/c_standard_library/c_function_strcpy.htm
     strcpy(temp->name, outName);
+    //printf("outName is %s, outval is \n", outName);
+    //free(outName);
     temp->val = outVal;
     temp->prev = varList;
     varList = temp;
-
+    line = NULL;
+    len = 0;
+    }
     /* ... */
 
     // Print the truth table
@@ -166,13 +252,18 @@ int main(int argc, char* argv[]) {
 
     // CURRENTLY SET UP TO PRINT JUST TWO ROWS OF THE TRUTH TABLE
 
-    // Rewind circuit file for each truth table line
-    rewind(circuit_fp);
-    printTruthTableRow (circuit_fp, 0);
+    // // Rewind circuit file for each truth table line
+    // rewind(circuit_fp);
+    // printTruthTableRow (circuit_fp, 0);
 
-    // Rewind circuit file for each truth table line
-    rewind(circuit_fp);
-    printTruthTableRow (circuit_fp, 1);
+    // // Rewind circuit file for each truth table line
+    // rewind(circuit_fp);
+    // printTruthTableRow (circuit_fp, 1);
+    for(int i=0; i<pow(2,circuitInputCount); i++)
+    {
+        rewind(circuit_fp);
+        printTruthTableRow (circuit_fp, i);
+    }
 
     fclose(circuit_fp);
     exit(EXIT_SUCCESS);
